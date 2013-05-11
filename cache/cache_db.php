@@ -67,9 +67,9 @@ class DBCache {
 		$result = FALSE;
 		$triedAgain = FALSE;
 		do {
-			$ret = $this->mysqlUtil->query("insert into " . $this->tableName . " set data = :serializedData, cachedTime = :now
+			$ret = $this->mysqlUtil->query("insert into " . $this->tableName . " set cacheID = :cacheID, data = :serializedData, cachedTime = :now
 				on duplicate key update data = :serializedData, cachedTime = :now",
-				array(":serializedData" => $serializedData, ":now" => time()));
+				array(":cacheID" => $cacheID, ":serializedData" => $serializedData, ":now" => time()));
 			if ($triedAgain) break;
 			if(!$ret) {
 				// create table
