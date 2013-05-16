@@ -22,7 +22,7 @@ class MysqlUtil {
 		preg_match_all($bindStringPattern, $sql_, $matches);
 		$bindCount = count($matches[0]);
 
-		$sql = preg_replace($bindStringPattern, "?", $sql_);
+		$this->lastQuery = $sql = preg_replace($bindStringPattern, "?", $sql_);
 		$mysqli = &$this->getMysqli();
 		$stmt = $mysqli->prepare($sql);
 		if(!$stmt) {
@@ -44,7 +44,7 @@ class MysqlUtil {
 			$paramBind[] = $value;
 		}
 		if($ret) {
-			if(!empty($paramBind[0])) call_user_func_array(array($stmt, 'bind_param'), $this->refValues($paramBind));
+			if(!empty($paramBind[0])) call_user_func_array(array($stmt, 'bind_param'), self::refValues($paramBind));
 			if($stmt->execute()) {
 				$this->affectedRows = $mysqli->affected_rows;
 				$this->lastInsertId = $mysqli->insert_id;
@@ -88,6 +88,10 @@ class MysqlUtil {
 		return $this->affectedRows;
 	}
 
+	public function getLastActualQuery() {
+		return $this->lastQuery;
+	}
+
 	private static function getMysqlBindType(&$value) {
 		return is_int($value)? "i": (
 				is_float($value)? "d": "s");
@@ -104,7 +108,7 @@ class MysqlUtil {
 		return $this->mysqli;
 	}
 
-	private function refValues($arr){
+	private static function refValues($arr){
 		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {	// Reference is required for PHP 5.3+
 			$refs = array();
 			foreach($arr as $key => $value)
@@ -123,4 +127,5 @@ class MysqlUtil {
 	private $lastErrorNo;
 	private $lastErrorMessage;
 	private $affectedRows;
+	private $lastQuery = "";
 }
