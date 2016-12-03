@@ -171,10 +171,10 @@ class Lion {
 	}
 
 	private function parseHeader($strResponseHeader) {
-		$arrHeaders = split("\r\n", $strResponseHeader);
+		$arrHeaders = explode("\r\n", $strResponseHeader);
 		$this->httpHeaderInfo2 = array();
 		foreach($arrHeaders as $value) {
-			$header = split(": ", $value, 2);
+			$header = explode(": ", $value, 2);
 			if(!isset($header[1])) continue;
 			$this->httpHeaderInfo2[$header[0]] = $header[1];
 		}
